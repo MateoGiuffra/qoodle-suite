@@ -1,4 +1,4 @@
-# qoodle-toolkit
+# qoodle-suite
 
 Monorepo (pnpm workspaces) para loguearse por SAML (SimpleSAMLphp,
 `acceso.uvq.edu.ar`) contra Qoodle (Moodle de la UVQ) y leer contenido de
@@ -34,8 +34,8 @@ API, manejo de errores, y cómo reusar una sesión ya logueada.
 ## Levantar este monorepo (para tocar el código)
 
 ```bash
-git clone https://github.com/MateoGiuffra/qoodle-toolkit.git
-cd qoodle-toolkit
+git clone https://github.com/MateoGiuffra/qoodle-suite.git
+cd qoodle-suite
 pnpm install
 pnpm build          # compila qoodle-sdk (los otros paquetes corren con tsx, sin build)
 ```

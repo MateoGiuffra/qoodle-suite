@@ -6,7 +6,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/MateoGiuffra/qoodle-toolkit.git",
+    "url": "git+https://github.com/MateoGiuffra/qoodle-suite.git",
     "directory": "packages/sdk"
   },
   "main": "dist/index.js",

@@ -14,7 +14,7 @@ tus credenciales:
   "mcpServers": {
     "qoodle": {
       "command": "npx",
-      "args": ["tsx", "/ruta/absoluta/a/qoodle-toolkit/packages/mcp/src/mcpServer.ts"],
+      "args": ["tsx", "/ruta/absoluta/a/qoodle-suite/packages/mcp/src/mcpServer.ts"],
       "env": {
         "CAMPUS_USERNAME": "tu_usuario",
         "CAMPUS_PASSWORD": "tu_password"
