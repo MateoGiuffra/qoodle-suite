@@ -1,0 +1,17 @@
+{
+  "name": "qoodle-toolkit",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Monorepo: SDK, servidor MCP y API REST para loguearse por SAML y leer contenido de Qoodle (Moodle UVQ).",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MateoGiuffra/qoodle-toolkit.git"
+  },
+  "scripts": {
+    "build": "pnpm -r --if-present run build",
+    "dev:api": "pnpm --filter qoodle-rest-api run dev",
+    "start:api": "pnpm --filter qoodle-rest-api run start",
+    "dev:mcp": "pnpm --filter qoodle-mcp-server run dev"
+  }
+}

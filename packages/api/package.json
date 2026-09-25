@@ -1,0 +1,32 @@
+{
+  "name": "qoodle-rest-api",
+  "version": "1.0.0",
+  "private": true,
+  "description": "API REST + Swagger sobre qoodle-sdk, con login SAML multiusuario por sesión de Express.",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "start": "tsx src/server.ts",
+    "build": "tsc --noEmit"
+  },
+  "dependencies": {
+    "qoodle-sdk": "workspace:*",
+    "cors": "^2.8.6",
+    "dotenv": "^17.3.1",
+    "express": "^5.2.1",
+    "express-session": "^1.19.0",
+    "swagger-ui-express": "^5.0.1",
+    "tough-cookie": "^6.0.0",
+    "yaml": "^2.6.1",
+    "zod": "^4.6.5"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.0",
+    "@types/express-session": "^1.18.0",
+    "@types/node": "^22.10.2",
+    "@types/swagger-ui-express": "^4.1.6",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2"
+  }
+}

@@ -1,0 +1,437 @@
+openapi: 3.0.3
+info:
+  title: Qoodle MCP API
+  description: >
+    Login SAML (SimpleSAMLphp -> acceso.uvq.edu.ar) contra Qoodle (Moodle UVQ)
+    y lectura estructurada del contenido de un curso. Pensada para servir de
+    base a un servidor MCP.
+  version: 1.0.0
+servers:
+  - url: http://localhost:3600
+paths:
+  /api/login:
+    post:
+      summary: Inicia sesión contra el IdP (SAML) y deja la sesión de Moodle activa
+      operationId: login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [username, password]
+              properties:
+                username:
+                  type: string
+                  example: tu_usuario
+                password:
+                  type: string
+                  format: password
+      responses:
+        '200':
+          description: Login exitoso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message: { type: string }
+                  user: { type: string }
+        '400':
+          description: Faltan credenciales
+        '401':
+          description: Credenciales inválidas
+
+  /api/me:
+    get:
+      summary: Consulta si hay una sesión activa
+      operationId: getMe
+      responses:
+        '200':
+          description: Sesión activa
+        '401':
+          description: Sin sesión
+
+  /api/google-sheet:
+    get:
+      summary: Lee una Google Sheet pública ("cualquiera con el link puede ver") como CSV parseado
+      operationId: getGoogleSheet
+      parameters:
+        - name: url
+          in: query
+          required: true
+          schema:
+            type: string
+          description: ID o URL completa de la Google Sheet
+          example: https://docs.google.com/spreadsheets/d/1rAKtt8H7DGkLpyET7jJgeT6oCrkNkf-wWl92VLdP4VU/edit
+        - name: gid
+          in: query
+          required: false
+          schema:
+            type: string
+          description: ID de la hoja/pestaña, si el link apunta a una en particular
+      responses:
+        '200':
+          description: Filas de la hoja
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  sheetId: { type: string }
+                  headers:
+                    type: array
+                    items: { type: string }
+                  rows:
+                    type: array
+                    items:
+                      type: array
+                      items: { type: string }
+                  csv: { type: string }
+        '400':
+          description: Falta el parámetro url
+        '500':
+          description: La hoja no es pública o no se pudo exportar
+
+  /api/youtube/transcript:
+    get:
+      summary: Transcripción pública de un video de YouTube (subtítulos), sin necesidad de login
+      operationId: getYoutubeTranscript
+      parameters:
+        - name: url
+          in: query
+          required: true
+          schema:
+            type: string
+          description: ID de YouTube o URL completa (youtu.be, watch?v=, embed, shorts)
+          example: https://youtu.be/For9VtrQx58
+      responses:
+        '200':
+          description: Transcripción completa y por segmentos
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  videoId: { type: string }
+                  text: { type: string }
+                  segments:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        text: { type: string }
+                        offsetMs: { type: number }
+                        durationMs: { type: number }
+        '400':
+          description: Falta el parámetro url
+        '500':
+          description: No se pudo obtener la transcripción (el video no tiene subtítulos, es privado, etc.)
+
+  /api/courses:
+    get:
+      summary: Lista las aulas (cursos) del usuario, para cualquier aula, no solo una en particular
+      operationId: listCourses
+      parameters:
+        - name: classification
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [all, inprogress, future, past]
+            default: all
+          description: >
+            "inprogress" son las aulas disponibles/activas ahora, "future" las que
+            todavía no empiezan, "past" las cerradas, "all" todas.
+      responses:
+        '200':
+          description: Listado de aulas
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  classification: { type: string }
+                  courses:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/CourseSummary'
+        '400':
+          description: classification inválida
+        '401':
+          description: No autenticado
+        '500':
+          description: Error al listar las aulas
+
+  /api/course/{id}:
+    get:
+      summary: Devuelve el contenido estructurado de un curso (secciones y actividades)
+      operationId: getCourse
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          example: 39960
+      responses:
+        '200':
+          description: Contenido del curso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CourseContent'
+        '401':
+          description: No autenticado
+        '500':
+          description: Error al obtener/parsear el curso
+
+  /api/forum/{id}:
+    get:
+      summary: Lista las discusiones de un foro (id del cmid, el que aparece en mod/forum/view.php?id=XXXXX)
+      operationId: getForum
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          example: 1939195
+      responses:
+        '200':
+          description: Listado de discusiones
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ForumDiscussionList'
+        '401':
+          description: No autenticado
+        '500':
+          description: Error al obtener/parsear el foro
+
+  /api/forum/discussion/{id}:
+    get:
+      summary: Devuelve una discusión completa con todas sus respuestas anidadas
+      operationId: getForumDiscussion
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          example: 926619
+      responses:
+        '200':
+          description: Discusión con posts y respuestas
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DiscussionContent'
+        '401':
+          description: No autenticado
+        '500':
+          description: Error al obtener/parsear la discusión
+
+  /api/resource/{id}:
+    get:
+      summary: Resuelve la URL real del archivo de un recurso (mod/resource), sin descargarlo
+      operationId: getResourceInfo
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          example: 1965431
+      responses:
+        '200':
+          description: URL y nombre de archivo resueltos
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  fileUrl: { type: string }
+                  filename: { type: string }
+        '401':
+          description: No autenticado
+        '500':
+          description: No se pudo resolver el recurso
+
+  /api/resource/{id}/text:
+    get:
+      summary: Extrae el texto plano de un recurso PDF, sin descargarlo a disco
+      operationId: getResourceText
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          example: 1992172
+      responses:
+        '200':
+          description: Texto extraído
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  filename: { type: string }
+                  text: { type: string }
+        '401':
+          description: No autenticado
+        '500':
+          description: No se pudo extraer el texto (por ejemplo, si no es un PDF)
+
+  /api/resource/{id}/download:
+    get:
+      summary: Descarga el archivo real del recurso (PDF, etc.) como binario
+      operationId: downloadResource
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          example: 1965431
+      responses:
+        '200':
+          description: Archivo binario
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '401':
+          description: No autenticado
+        '500':
+          description: No se pudo descargar el recurso
+
+  /api/assignment/{id}:
+    get:
+      summary: Estado de una tarea (mod/assign) - entrega, formato y calificación
+      operationId: getAssignmentInfo
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          example: 1992173
+      responses:
+        '200':
+          description: Info de la tarea
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  title: { type: string }
+                  dueDate: { type: string, nullable: true }
+                  submissionStatus: { type: string, nullable: true }
+                  gradingStatus: { type: string, nullable: true }
+                  submittedFiles:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        name: { type: string }
+                        url: { type: string, nullable: true }
+                  onlineText: { type: string, nullable: true }
+                  feedback: { type: string, nullable: true }
+        '401':
+          description: No autenticado
+        '500':
+          description: No se pudo leer el estado de la tarea
+
+  /api/logout:
+    post:
+      summary: Cierra la sesión local
+      operationId: logout
+      responses:
+        '200':
+          description: Sesión cerrada
+
+components:
+  schemas:
+    CourseSummary:
+      type: object
+      properties:
+        id: { type: integer }
+        fullname: { type: string }
+        viewurl: { type: string }
+        visible: { type: boolean }
+        hidden: { type: boolean }
+        isfavourite: { type: boolean }
+        hasprogress: { type: boolean }
+        progress: { type: number }
+        startdate: { type: integer }
+        enddate: { type: integer }
+    DiscussionListItem:
+      type: object
+      properties:
+        id: { type: string }
+        title: { type: string }
+        author: { type: string }
+        date: { type: string, nullable: true }
+        url: { type: string }
+    ForumDiscussionList:
+      type: object
+      properties:
+        forumTitle: { type: string }
+        discussions:
+          type: array
+          items:
+            $ref: '#/components/schemas/DiscussionListItem'
+    ForumPost:
+      type: object
+      properties:
+        id: { type: string }
+        subject: { type: string }
+        author: { type: string }
+        authorUrl: { type: string, nullable: true }
+        date: { type: string, nullable: true }
+        html: { type: string }
+        text: { type: string }
+        replies:
+          type: array
+          items:
+            $ref: '#/components/schemas/ForumPost'
+    DiscussionContent:
+      type: object
+      properties:
+        title: { type: string }
+        posts:
+          type: array
+          items:
+            $ref: '#/components/schemas/ForumPost'
+    Activity:
+      type: object
+      properties:
+        type:
+          type: string
+          example: resource
+        name:
+          type: string
+          example: Programa
+        url:
+          type: string
+          nullable: true
+    Section:
+      type: object
+      properties:
+        name: { type: string }
+        summary: { type: string }
+        activities:
+          type: array
+          items:
+            $ref: '#/components/schemas/Activity'
+    CourseContent:
+      type: object
+      properties:
+        title: { type: string }
+        sections:
+          type: array
+          items:
+            $ref: '#/components/schemas/Section'
