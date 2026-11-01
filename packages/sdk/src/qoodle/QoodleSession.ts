@@ -34,7 +34,14 @@ export class QoodleSession implements QoodleAuth {
             await performSamlLogin(this.httpClient, this.username, this.password, QOODLE_HOME);
             this.loggedIn = true;
         } catch (err) {
-            throw new UnauthorizedError('No se pudo iniciar sesión en Qoodle: revisá el usuario y la contraseña', err);
+            const detail = (err as Error)?.message ?? 'error desconocido';
+            const badCreds = detail.startsWith('Credenciales inválidas');
+            throw new UnauthorizedError(
+                badCreds
+                    ? 'No se pudo iniciar sesión en Qoodle: revisá el usuario y la contraseña'
+                    : `No se pudo iniciar sesión en Qoodle: ${detail}`,
+                err
+            );
         }
     }
 
