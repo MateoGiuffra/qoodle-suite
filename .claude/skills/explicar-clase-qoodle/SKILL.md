@@ -70,6 +70,32 @@ En cambio: escribí como escribiría el usuario si lo tipeara rápido — direct
 
 Si en el foro la docente ya dejó devoluciones sobre las respuestas de otros compañeros, leelas con cuidado antes de armar la respuesta: ahí está el criterio de corrección real (qué pide precisar, qué considera "demasiado general", qué distinción espera que se haga). Armá la respuesta evitando explícitamente cada uno de esos errores repetidos — eso es lo que la sube de una respuesta genérica a una de nota alta. Ejemplos típicos de lo que suele pedir (varían por consigna, pero el patrón se repite): ser específico al caso puntual y no quedarse en la definición genérica del género, diferenciar niveles de autoridad/decisión entre los actores de la audiencia (no meterlos a todos en la misma bolsa), y al nombrar una estructura gramatical dar un ejemplo concreto del texto + explicar su función discursiva puntual (no una frase genérica tipo "aporta claridad y precisión").
 
+## Criterios de corrección por materia (sacados del feedback real)
+
+Antes de armar un borrador, buscá también el feedback de la docente en Gmail (`mcp__claude_ai_Gmail__search_threads`): los posts del foro llegan como mail desde `noreply@uvq.edu.ar` ("Martinez Yanina Alejandra" en Inglés II) y los mensajes privados como "Mensaje nuevo de (...)". Sirve si el MCP de Qoodle falla, y para detectar pedidos que el usuario no vio.
+
+### Inglés II (Yanina Martinez, yaninamartinez.unq@gmail.com)
+
+Dónde publicar:
+- Siempre como respuesta dentro del hilo "Answers + feedback" / "Answers and feedback" de cada foro, NUNCA en un hilo nuevo. Ya le marcó a Mateo dos veces respuestas fuera de lugar.
+- Si un envío a una tarea queda sin archivo adjunto, ella lo pide por mail: verificar que el documento quedó subido.
+
+Análisis de textos (PRs, mails, expositivos):
+- Responder sobre el caso concreto ("esta PR agrega techstack.yml y techstack.md"), nunca la definición genérica del género.
+- Audiencia: no meter a todos en la misma bolsa. Separar quién solo lee, quién revisa/comenta y quién decide (aprueba/mergea). Evitar "cualquier persona", "los responsables", "todos los desarrolladores": son "demasiado amplio".
+- Estructuras gramaticales: nombre exacto (ej. "presente continuo en voz pasiva", no solo "pasiva") + ejemplo literal del texto + función discursiva puntual. Prohibido "aporta claridad y precisión" o equivalentes genéricos. Distinguir forma verbal de función. Las listas no son estructura gramatical.
+- Movimientos retóricos: conectar cada movimiento con su función (lo valora explícitamente).
+- Textos expositivos: tipo de texto + propósito completo (si es compare/contrast, diferencias Y similitudes) + aspectos lingüísticos + clue words concretas citadas. El organizador gráfico va en español y tiene que mostrar los pasos / el contenido real, no solo la estructura vacía.
+- Resumen/tema: el tema se expresa en una frase nominal y no incluye el género ("es un tutorial" no es tema). Las ideas principales no son cada paso del tutorial.
+
+Escritura de mails formales (en inglés):
+- Asunto obligatorio y específico. Saludo formal ("Dear Sir/Madam" si no se conoce al destinatario).
+- Registro formal: "I am writing to inform you that..." en vez de "I just wanted to let you know...".
+- Desarrollar bien el primer párrafo (propósito + contexto); fue la corrección a Mateo el 2026-10-23. El cuerpo tiene que dejar claro el objetivo y la acción esperada del destinatario.
+- En el parcial el mail pide mínimo 200 palabras.
+
+Glosario: cuando una clase lo pide, agregar los conceptos clave del área en el espacio de glosario (lo recuerda seguido).
+
 ## Elegir un "compañero" cuando la consigna pide diálogo
 
 Si la actividad pide responder/dialogar con otros (no postear suelto), buscá el foro real con `get_forum_discussions` + `get_forum_discussion` y elegí a alguien que cumpla el requisito puntual de la consigna (ej: que haya elegido una opción distinta a la tuya, que su post no tenga respuestas todavía, que sea el que menos cobertura tiene del ejercicio). Explicá en una línea por qué ese compañero es la mejor opción, y dale el link a su post/perfil si está disponible.

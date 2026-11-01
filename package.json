@@ -10,8 +10,8 @@
   },
   "scripts": {
     "build": "pnpm -r --if-present run build",
-    "dev:api": "pnpm --filter qoodle-rest-api run dev",
-    "start:api": "pnpm --filter qoodle-rest-api run start",
-    "dev:mcp": "pnpm --filter qoodle-mcp-server run dev"
+    "dev:api": "pnpm --filter qoodle-sdk run build && pnpm --filter qoodle-rest-api run dev",
+    "start:api": "pnpm --filter qoodle-sdk run build && pnpm --filter qoodle-rest-api run start",
+    "dev:mcp": "pnpm --filter qoodle-sdk run build && pnpm --filter qoodle-mcp-server run dev"
   }
 }

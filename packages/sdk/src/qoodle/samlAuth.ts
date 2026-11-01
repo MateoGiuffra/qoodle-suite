@@ -15,8 +15,13 @@ export async function performSamlLogin(client: AxiosInstance, username: string, 
     // Paso 1: pedir el recurso protegido -> redirige al IdP con AuthState
     const resTrigger = await client.get(targetUrl, { headers: { Accept: 'text/html' } });
     const $login = cheerio.load(resTrigger.data);
-    const authState = $login('input[name="AuthState"]').val() as string | undefined;
-    const loginPostUrl = (resTrigger.request?.res?.responseUrl as string) || targetUrl;
+    const triggerUrl = (resTrigger.request?.res?.responseUrl as string) || targetUrl;
+    // SimpleSAMLphp 2 manda el AuthState en el action del form, no como input oculto
+    const formAction = $login('form#loginform').attr('action') || $login('form').attr('action');
+    const loginPostUrl = formAction ? new URL(formAction, triggerUrl).href : triggerUrl;
+    const authState = ($login('input[name="AuthState"]').val() as string | undefined)
+        || new URL(loginPostUrl).searchParams.get('AuthState')
+        || undefined;
 
     if (!authState) {
         throw new Error('No se pudo obtener AuthState del IdP (¿la sesión ya estaba logueada, o cambió el flujo?)');
@@ -24,7 +29,7 @@ export async function performSamlLogin(client: AxiosInstance, username: string, 
 
     // Paso 2: POST de credenciales al IdP
     const loginPayload = new URLSearchParams({
-        username,
+        username: username.toLowerCase(),
         password,
         AuthState: authState,
         'wp-submit': 'Ingresar'
